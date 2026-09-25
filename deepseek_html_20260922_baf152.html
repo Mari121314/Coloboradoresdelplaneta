@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔬 Simulador PCO - Uso Adecuado de Canecas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .contenedor {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            color: #2c3e50;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #27ae60;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #0f2027;
+            font-size: 1.7em;
+            margin-bottom: 5px;
+        }
+
+        .header .sub {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        /* Grid principal */
+        .grid-principal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-principal { grid-template-columns: 1fr; }
+        }
+
+        /* Panel del modelo */
+        .panel-modelo {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .panel-modelo h2 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            opacity: 0.95;
+        }
+
+        .ecuacion {
+            font-family: 'Courier New', monospace;
+            font-size: 1.8em;
+            font-weight: bold;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .parametros {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .parametro {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .parametro .label {
+            font-size: 0.75em;
+            opacity: 0.85;
+            margin-bottom: 4px;
+        }
+
+        .parametro .val {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .interpretacion {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+
+        /* Panel simulador */
+        .panel-simulador {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .panel-simulador h2 {
+            color: #0f2027;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .slider-container {
+            margin-bottom: 20px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .slider-header .x-valor {
+            background: #27ae60;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #27ae60, #f39c12, #e74c3c);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #2c3e50;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .resultado-y {
+            background: linear-gradient(135deg, #27ae60, #16a085);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .resultado-y .label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .resultado-y .numero {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .resultado-y .unidad {
+            font-size: 0.8em;
+            opacity: 0.85;
+        }
+
+        /* Contexto real */
+        .contexto-real {
+            background: #fff3cd;
+            border-left: 5px solid #f39c12;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .contexto-real strong {
+            color: #d35400;
+        }
+
+        /* Gráfica */
+        .panel-grafica {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .panel-grafica h2 {
+            color: #0f2027;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 350px;
+            display: block;
+        }
+
+        /* Tabla */
+        .panel-tabla {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .panel-tabla h2 {
+            color: #0f2027;
+            font-size: 1.05em;
+            margin-bottom: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #dee2e6;
+            color: #2c3e50;
+        }
+
+        tr:nth-child(even) td { background: white; }
+        tr:hover td { background: #e8f5e9; }
+
+        .destacado td {
+            background: #d4edda !important;
+            font-weight: bold;
+            color: #155724;
+        }
+
+        /* Escenarios */
+        .escenarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .escenario-card {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .escenario-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #27ae60;
+        }
+
+        .escenario-card.activo {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .escenario-card .nombre {
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .escenario-card .x-mini {
+            font-size: 1.3em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .escenario-card .y-mini {
+            font-size: 0.75em;
+            opacity: 0.85;
+            margin-top: 5px;
+        }
+
+        /* Botón */
+        .acciones {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primario {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-primario:hover { background: #229954; transform: translateY(-2px); }
+
+        .btn-secundario {
+            background: #3498db;
+            color: white;
+        }
+        .btn-secundario:hover { background: #2980b9; transform: translateY(-2px); }
+
+        .btn-info {
+            background: #9b59b6;
+            color: white;
+        }
+        .btn-info:hover { background: #8e44ad; transform: translateY(-2px); }
+
+        @media (max-width: 600px) {
+            .contenedor { padding: 15px; }
+            .header h1 { font-size: 1.3em; }
+            .ecuacion { font-size: 1.3em; }
+            .resultado-y .numero { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <div class="header">
+            <h1>🔬 Simulador del Modelo Científico</h1>
+            <div class="sub">Uso adecuado de las canecas de reciclaje — PCO Reto 4</div>
+            <div class="badge">COLABORADORES DEL PLANETA · IED VENECIA · 1102</div>
+        </div>
+
+        <!-- Grid principal: Modelo + Simulador -->
+        <div class="grid-principal">
+            <!-- Panel del modelo matemático -->
+            <div class="panel-modelo">
+                <h2>📐 Modelo matemático (regresión lineal)</h2>
+                <div class="ecuacion" id="ecuacion">Y = 0 X + 0</div>
+                <div class="parametros">
+                    <div class="parametro">
+                        <div class="label">Pendiente (m)</div>
+                        <div class="val" id="valor-pendiente">0</div>
+                    </div>
+                    <div class="parametro">
+                        <div class="label">Intercepto (b)</div>
+                        <div class="val" id="valor-intercepto">0</div>
+                    </div>
+                    <div class="parametro">
+                        <div class="label">R²</div>
+                        <div class="val" id="valor-r2">0</div>
+                    </div>
+                    <div class="parametro">
+                        <div class="label">Registros</div>
+                        <div class="val" id="valor-n">0</div>
+                    </div>
+                </div>
+                <div class="interpretacion" id="interpretacion">
+                    Calculando modelo a partir de los datos...
+                </div>
+            </div>
+
+            <!-- Panel simulador -->
+            <div class="panel-simulador">
+                <h2>🎛️ Explorar escenarios</h2>
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span>X = Tiempo (minutos)</span>
+                        <span class="x-valor" id="x-display">0</span>
+                    </div>
+                    <input type="range" id="slider-x" min="0" max="35" value="20" step="1">
+                </div>
+
+                <div class="resultado-y">
+                    <div class="label">Y = Conteo de residuos predicho</div>
+                    <div class="numero" id="y-display">0</div>
+                    <div class="unidad">residuos</div>
+                </div>
+
+                <div class="contexto-real" id="contexto">
+                    Contexto: jornada mañana, 1000 personas.
+                </div>
+
+                <div style="font-size:0.85em; color:#7f8c8d; text-align:center;">
+                    Mueve el deslizador para predecir el conteo según el tiempo
+                </div>
+            </div>
+        </div>
+
+        <!-- Escenarios rápidos -->
+        <div class="escenarios" id="escenarios">
+            <!-- Se generan dinámicamente -->
+        </div>
+
+        <!-- Gráfica -->
+        <div class="panel-grafica">
+            <h2>📈 Gráfica de dispersión + línea de tendencia</h2>
+            <canvas id="grafica" width="1000" height="350"></canvas>
+        </div>
+
+        <!-- Tabla de datos -->
+        <div class="panel-tabla">
+            <h2>📋 Tabla de datos reales + predicción</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tiempo (X)</th>
+                        <th>Conteo observado (Y)</th>
+                        <th>Conteo predicho (Ŷ)</th>
+                        <th>Residuo (Y - Ŷ)</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-datos">
+                    <!-- Se llena dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Acciones -->
+        <div class="acciones">
+            <button class="btn btn-primario" onclick="exportarReporte()">📥 Exportar reporte completo</button>
+            <button class="btn btn-secundario" onclick="mostrarAyuda()">❓ Cómo usar en la bitácora</button>
+            <button class="btn btn-info" onclick="resetearSlider()">🔄 Volver a X=20 min</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DATOS REALES del archivo "datos de STEM.xlsx"
+        // ============================================================
+        const datosReales = [
+            { x: 31, y: 14 },
+            { x: 1,  y: 3  },
+            { x: 2,  y: 10 },
+            { x: 3,  y: 26 },
+            { x: 4,  y: 11 },
+            { x: 7,  y: 32 },
+            { x: 8,  y: 10 },
+            { x: 9,  y: 34 },
+            { x: 10, y: 22 },
+            { x: 11, y: 7  }
+        ];
+
+        // ============================================================
+        // CÁLCULO DE REGRESIÓN LINEAL (mínimos cuadrados)
+        // ============================================================
+        function calcularRegresion(datos) {
+            const n = datos.length;
+            let sumaX = 0, sumaY = 0, sumaXY = 0, sumaX2 = 0, sumaY2 = 0;
+
+            datos.forEach(d => {
+                sumaX += d.x;
+                sumaY += d.y;
+                sumaXY += d.x * d.y;
+                sumaX2 += d.x * d.x;
+                sumaY2 += d.y * d.y;
+            });
+
+            const mediaX = sumaX / n;
+            const mediaY = sumaY / n;
+
+            const pendiente = (n * sumaXY - sumaX * sumaY) / (n * sumaX2 - sumaX * sumaX);
+            const intercepto = mediaY - pendiente * mediaX;
+
+            // Coeficiente de determinación R²
+            let ssTotal = 0, ssResidual = 0;
+            datos.forEach(d => {
+                const predicho = pendiente * d.x + intercepto;
+                ssTotal += Math.pow(d.y - mediaY, 2);
+                ssResidual += Math.pow(d.y - predicho, 2);
+            });
+            const r2 = 1 - (ssResidual / ssTotal);
+
+            return { pendiente, intercepto, r2, n };
+        }
+
+        // ============================================================
+        // ESTADO
+        // ============================================================
+        const modelo = calcularRegresion(datosReales);
+        let xActual = 20;
+
+        // ============================================================
+        // INICIALIZAR UI CON EL MODELO
+        // ============================================================
+        function inicializarUI() {
+            // Ecuación
+            const signo = modelo.intercepto >= 0 ? '+' : '-';
+            document.getElementById('ecuacion').textContent =
+                `Y = ${modelo.pendiente.toFixed(3)} X ${signo} ${Math.abs(modelo.intercepto).toFixed(3)}`;
+
+            document.getElementById('valor-pendiente').textContent = modelo.pendiente.toFixed(3);
+            document.getElementById('valor-intercepto').textContent = modelo.intercepto.toFixed(3);
+            document.getElementById('valor-r2').textContent = modelo.r2.toFixed(3);
+            document.getElementById('valor-n').textContent = modelo.n;
+
+            // Interpretación automática
+            const interpretacion = generarInterpretacion();
+            document.getElementById('interpretacion').innerHTML = interpretacion;
+
+            // Slider
+            const maxX = Math.max(...datosReales.map(d => d.x)) + 10;
+            document.getElementById('slider-x').max = maxX;
+
+            // Escenarios
+            generarEscenarios();
+
+            // Gráfica y tabla
+            dibujarGrafica();
+            llenarTabla();
+            actualizarPrediccion();
+        }
+
+        function generarInterpretacion() {
+            const m = modelo.pendiente;
+            const b = modelo.intercepto;
+            const r2 = modelo.r2;
+
+            let calidadR2 = '';
+            if (r2 >= 0.7) calidadR2 = 'fuerte';
+            else if (r2 >= 0.4) calidadR2 = 'moderada';
+            else if (r2 >= 0.2) calidadR2 = 'débil';
+            else calidadR2 = 'muy débil';
+
+            return `
+                <strong>📖 Interpretación:</strong><br>
+                • La <strong>pendiente</strong> (${m.toFixed(3)}) indica que por cada minuto adicional de descanso, 
+                  el conteo de residuos ${m >= 0 ? 'aumenta' : 'disminuye'} en promedio ${Math.abs(m).toFixed(3)} unidades.<br>
+                • El <strong>intercepto</strong> (${b.toFixed(3)}) representa el conteo estimado cuando X = 0 min.<br>
+                • El <strong>R²</strong> = ${r2.toFixed(3)} indica una relación <strong>${calidadR2}</strong> entre el tiempo y el conteo. 
+                  ${r2 < 0.5 ? 'Los datos muestran alta variabilidad, lo que sugiere que otros factores influyen.' : 'El modelo explica bien el comportamiento observado.'}
+            `;
+        }
+
+        // ============================================================
+        // ACTUALIZAR PREDICCIÓN SEGÚN X
+        // ============================================================
+        function actualizarPrediccion() {
+            xActual = parseInt(document.getElementById('slider-x').value);
+            const yPredicho = modelo.pendiente * xActual + modelo.intercepto;
+            const yRedondeado = Math.max(0, Math.round(yPredicho));
+
+            document.getElementById('x-display').textContent = xActual + ' min';
+            document.getElementById('y-display').textContent = yRedondeado;
+
+            // Contexto dinámico
+            let contexto = '';
+            if (xActual <= 5) contexto = '🟢 Inicio del descanso. Baja acumulación esperada.';
+            else if (xActual <= 15) contexto = '🟡 Mitad del descanso. Acumulación moderada.';
+            else if (xActual <= 25) contexto = '🟠 Mayor acumulación de residuos.';
+            else contexto = '🔴 Alto volumen de residuos. Momento crítico.';
+
+            document.getElementById('contexto').innerHTML =
+                `<strong>Contexto:</strong> jornada mañana, 1000 personas.<br>${contexto}`;
+
+            // Resaltar escenario activo
+            document.querySelectorAll('.escenario-card').forEach(card => {
+                card.classList.toggle('activo', parseInt(card.dataset.x) === xActual);
+            });
+
+            // Redibujar gráfica con punto móvil
+            dibujarGrafica();
+        }
+
+        // ============================================================
+        // ESCENARIOS RÁPIDOS
+        // ============================================================
+        function generarEscenarios() {
+            const escenarios = [
+                { x: 5,  nombre: 'Inicio',  emoji: '🚀' },
+                { x: 10, nombre: 'Cuarto',  emoji: '⏱️' },
+                { x: 15, nombre: 'Mitad',   emoji: '⏳' },
+                { x: 20, nombre: 'Jornada', emoji: '🎯' },
+                { x: 30, nombre: 'Extendido', emoji: '⚠️' }
+            ];
+
+            const contenedor = document.getElementById('escenarios');
+            contenedor.innerHTML = escenarios.map(e => {
+                const yPred = Math.max(0, Math.round(modelo.pendiente * e.x + modelo.intercepto));
+                return `
+                    <div class="escenario-card" data-x="${e.x}" onclick="irAEscenario(${e.x})">
+                        <div class="nombre">${e.emoji} ${e.nombre}</div>
+                        <div class="x-mini">${e.x} min</div>
+                        <div class="y-mini">≈ ${yPred} residuos</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function irAEscenario(x) {
+            document.getElementById('slider-x').value = x;
+            actualizarPrediccion();
+        }
+
+        function resetearSlider() {
+            irAEscenario(20);
+        }
+
+        // ============================================================
+        // GRÁFICA CON CANVAS
+        // ============================================================
+        function dibujarGrafica() {
+            const canvas = document.getElementById('grafica');
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width;
+            const H = canvas.height;
+            const padding = 55;
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Calcular rangos
+            const xs = datosReales.map(d => d.x);
+            const ys = datosReales.map(d => d.y);
+            const xMax = Math.max(...xs) + 5;
+            const yMax = Math.max(...ys) + 5;
+
+            // Fondo
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(0, 0, W, H);
+
+            // Grid
+            ctx.strokeStyle = '#e9ecef';
+            ctx.lineWidth = 1;
+            const gridCols = 7;
+            const gridRows = 6;
+            for (let i = 0; i <= gridCols; i++) {
+                const x = padding + (i / gridCols) * (W - 2 * padding);
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, H - padding);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= gridRows; i++) {
+                const y = padding + (i / gridRows) * (H - 2 * padding);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(W - padding, y);
+                ctx.stroke();
+            }
+
+            // Ejes
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, H - padding);
+            ctx.lineTo(W - padding, H - padding);
+            ctx.stroke();
+
+            // Etiquetas de ejes
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 13px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText('Tiempo X (minutos)', W / 2, H - 15);
+            
+            ctx.save();
+            ctx.translate(18, H / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Conteo Y (residuos)', 0, 0);
+            ctx.restore();
+
+            // Marcas numéricas
+            ctx.font = '11px Segoe UI';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= gridCols; i++) {
+                const valor = Math.round((i / gridCols) * xMax);
+                const x = padding + (i / gridCols) * (W - 2 * padding);
+                ctx.fillText(valor, x, H - padding + 18);
+            }
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= gridRows; i++) {
+                const valor = Math.round(yMax - (i / gridRows) * yMax);
+                const y = padding + (i / gridRows) * (H - 2 * padding);
+                ctx.fillText(valor, padding - 8, y + 4);
+            }
+
+            // Función de conversión
+            const toPX = (x) => padding + (x / xMax) * (W - 2 * padding);
+            const toPY = (y) => H - padding - (y / yMax) * (H - 2 * padding);
+
+            // Línea de tendencia
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            const x0 = 0;
+            const x1 = xMax;
+            const y0 = modelo.pendiente * x0 + modelo.intercepto;
+            const y1 = modelo.pendiente * x1 + modelo.intercepto;
+            ctx.moveTo(toPX(x0), toPY(y0));
+            ctx.lineTo(toPX(x1), toPY(y1));
+            ctx.stroke();
+
+            // Puntos de datos
+            datosReales.forEach(d => {
+                const px = toPX(d.x);
+                const py = toPY(d.y);
+                
+                // Sombra
+                ctx.beginPath();
+                ctx.arc(px, py, 8, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
+                ctx.fill();
+                
+                // Punto
+                ctx.beginPath();
+                ctx.arc(px, py, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#3498db';
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+
+            // Punto móvil (predicción actual)
+            const yPred = modelo.pendiente * xActual + modelo.intercepto;
+            if (xActual <= xMax) {
+                const px = toPX(xActual);
+                const py = toPY(Math.max(0, yPred));
+
+                // Línea vertical punteada
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#27ae60';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(px, H - padding);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Círculo destacado
+                ctx.beginPath();
+                ctx.arc(px, py, 12, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(39, 174, 96, 0.3)';
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(px, py, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#27ae60';
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Etiqueta
+                ctx.fillStyle = '#27ae60';
+                ctx.font = 'bold 12px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText(`(${xActual}, ${Math.round(yPred)})`, px, py - 18);
+            }
+
+            // Leyenda
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '11px Segoe UI';
+            ctx.textAlign = 'left';
+            ctx.beginPath();
+            ctx.arc(W - 200, 25, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#3498db';
+            ctx.fill();
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('Datos observados', W - 188, 29);
+
+            ctx.beginPath();
+            ctx.moveTo(W - 200, 48);
+            ctx.lineTo(W - 180, 48);
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('Línea de tendencia', W - 175, 52);
+        }
+
+        // ============================================================
+        // TABLA DE DATOS
+        // ============================================================
+        function llenarTabla() {
+            const tbody = document.getElementById('tabla-datos');
+            // Ordenar por X
+            const ordenados = [...datosReales].sort((a, b) => a.x - b.x);
+
+            tbody.innerHTML = ordenados.map(d => {
+                const predicho = modelo.pendiente * d.x + modelo.intercepto;
+                const residuo = d.y - predicho;
+                return `
+                    <tr>
+                        <td><strong>${d.x}</strong> min</td>
+                        <td>${d.y}</td>
+                        <td>${predicho.toFixed(2)}</td>
+                        <td style="color: ${residuo >= 0 ? '#27ae60' : '#e74c3c'};">
+                            ${residuo >= 0 ? '+' : ''}${residuo.toFixed(2)}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        // EXPORTAR REPORTE
+        // ============================================================
+        function exportarReporte() {
+            let txt = '';
+            txt += '═══════════════════════════════════════════════════════\n';
+            txt += '   REPORTE DEL SIMULADOR - PCO RETO 4\n';
+            txt += '   Colaboradores del Planeta - IED Venecia 1102\n';
+            txt += '   Fenómeno: Uso adecuado de las canecas de reciclaje\n';
+            txt += '═══════════════════════════════════════════════════════\n\n';
+            txt += `Fecha: ${new Date().toLocaleString()}\n`;
+            txt += `Contexto: Jornada mañana · 1000 personas · Descanso 20 min\n\n`;
+
+            txt += '─── MODELO MATEMÁTICO (REGRESIÓN LINEAL) ───\n\n';
+            txt += `Ecuación: Y = ${modelo.pendiente.toFixed(4)} X ${modelo.intercepto >= 0 ? '+' : '-'} ${Math.abs(modelo.intercepto).toFixed(4)}\n`;
+            txt += `Pendiente (m): ${modelo.pendiente.toFixed(4)}\n`;
+            txt += `Intercepto (b): ${modelo.intercepto.toFixed(4)}\n`;
+            txt += `R²: ${modelo.r2.toFixed(4)}\n`;
+            txt += `Número de registros: ${modelo.n}\n\n`;
+
+            txt += '─── DATOS REALES Y PREDICCIÓN ───\n\n';
+            txt += 'X (min)   Y obs.    Ŷ pred.    Residuo\n';
+            txt += '─'.repeat(45) + '\n';
+            [...datosReales].sort((a, b) => a.x - b.x).forEach(d => {
+                const pred = modelo.pendiente * d.x + modelo.intercepto;
+                const res = d.y - pred;
+                txt += `${String(d.x).padStart(5)}    ${String(d.y).padStart(5)}    ${pred.toFixed(2).padStart(7)}    ${(res >= 0 ? '+' : '') + res.toFixed(2)}\n`;
+            });
+
+            txt += '\n─── ESCENARIOS EXPLORADOS ───\n\n';
+            [5, 10, 15, 20, 30].forEach(x => {
+                const y = Math.max(0, Math.round(modelo.pendiente * x + modelo.intercepto));
+                txt += `X = ${x} min  →  Y ≈ ${y} residuos\n`;
+            });
+
+            txt += '\n─── INTERPRETACIÓN ───\n\n';
+            txt += `La pendiente (${modelo.pendiente.toFixed(3)}) indica que por cada minuto\n`;
+            txt += `adicional, el conteo ${modelo.pendiente >= 0 ? 'aumenta' : 'disminuye'} en promedio ${Math.abs(modelo.pendiente).toFixed(3)} residuos.\n`;
+            txt += `El R² = ${modelo.r2.toFixed(3)} indica que el modelo explica el ${(modelo.r2 * 100).toFixed(1)}%\n`;
+            txt += `de la variabilidad observada.\n\n`;
+
+            txt += '─── PROYECCIÓN PARA 20 MINUTOS ───\n\n';
+            const yProyectado = Math.max(0, Math.round(modelo.pendiente * 20 + modelo.intercepto));
+            txt += `En un descanso de 20 minutos se estiman aproximadamente\n`;
+            txt += `${yProyectado} residuos acumulados en la jornada mañana.\n`;
+            txt += `Proyección semanal (5 días): ${yProyectado * 5} residuos\n`;
+            txt += `Proyección mensual (20 días): ${yProyectado * 20} residuos\n`;
+
+            txt += '\n═══════════════════════════════════════════════════════\n';
+            txt += '   Generado por el simulador PCO - Reto 4\n';
+            txt += '═══════════════════════════════════════════════════════\n';
+
+            const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reporte-PCO-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================================
+        // AYUDA
+        // ============================================================
+        function mostrarAyuda() {
+            alert(
+                '📚 CÓMO USAR ESTE SIMULADOR EN LA BITÁCORA\n\n' +
+                '1. CAPTURA DE PANTALLA de la gráfica y ecuación → pégalas en Tabla 6 y Tabla 7.\n\n' +
+                '2. COPIA LA ECUACIÓN resultante (ej: Y = 0.5X + 8) en Tabla 4 (Representación matemática).\n\n' +
+                '3. USA LOS ESCENARIOS (X=5, 10, 15, 20, 30) para llenar la columna "Forma de explorar el modelo" de Tabla 6.\n\n' +
+                '4. EXPORTA EL REPORTE y adjúntalo como evidencia en la Sala de creación.\n\n' +
+                '5. ENLAZA el simulador (sube este HTML a Drive) y pega el enlace en Tabla 7.'
+            );
+        }
+
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        document.getElementById('slider-x').addEventListener('input', actualizarPrediccion);
+
+        // Init
+        window.addEventListener('load', inicializarUI);
+    </script>
+</body>
+</html>
